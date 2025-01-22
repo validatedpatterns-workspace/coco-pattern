@@ -1,7 +1,7 @@
-# This is currently configured as an 'all in one' deployment
+# This is currently configured as an 'all in one' deployment in one cluster.
 
 clusterGroup:
-  name: allInOne
+  name: simple
   isHubCluster: true
   namespaces:
   - open-cluster-management
@@ -13,16 +13,6 @@ clusterGroup:
   - cert-manager-operator
   - cert-manager
   - lets-encrypt
-
-  # AI stuff 
-  - redhat-ods-operator
-  - openshift-pipelines
-  - openshift-storage
-  - openshift-nfd
-  - nvidia-gpu-operator
-  - openshift-serverless
-  - knative-serving
-
 
   subscriptions:
     # ACM is kept anticipating 
@@ -42,29 +32,6 @@ clusterGroup:
       namespace: trustee-operator-system
       source: redhat-operators
       channel: stable
-    rhoai:
-      name: rhods-operator
-      # Fast is required for 2.9.0
-      channel: fast
-      version: "2.13.0" # ensure we get the latest
-      namespace: openshift-operators
-
-    openshift-pipelines:
-      name: openshift-pipelines-operator-rh
-      namespace: openshift-operators
-
-    odf:
-      name: odf-operator
-      namespace: openshift-storage
-
-    serverless:
-      channel: stable
-      name: serverless-operator
-
-    servicemesh:
-      channel: stable
-      namespace: openshift-operators
-      name: servicemeshoperator
 
     cert-manager:
       name: openshift-cert-manager-operator
@@ -136,7 +103,6 @@ clusterGroup:
       project: default
       path: charts/all/letsencrypt
 
-
     hello-openshift:
       name: hello-openshift
       namespace: hello-openshift
@@ -149,36 +115,6 @@ clusterGroup:
       namespace: openshift-config
       project: auth
       path: charts/all/htpassword
-
-
-    mcg:
-      name: mcg
-      namespace: openshift-storage
-      project: openshift-storage
-      path: charts/hub/mcg
-
-    rhoai:
-      name: rhoai
-      namespace: redhat-ods-operator
-      project: hub
-      path: charts/all/rhoai
-
-
-    science-project:
-      name: science-project
-      namespace: default # creates a project
-      project: science-project
-      path: charts/hub/science-project
-      # chartVersion: 0.1.*
-      # sources:
-      # sources:
-      # - ref: patternref
-      #   repoURL: https://github.com/foo/multicloud-gitops
-      #   targetRevision: test2
-      # - chart: acm
-      #   repoURL: https://charts.validatedpatterns.io/ # default
-      #   targetRevision: 0.1.*
-
 
   imperative:
     # NOTE: We *must* use lists and not hashes. As hashes lose ordering once parsed by helm
@@ -229,54 +165,54 @@ clusterGroup:
         #    clusters:
         #    - Two
         #    - Three
-#  To have apps in multiple flavors, use namespaces and use helm overrides as appropriate
-#
-#    pipelines:
-#      name: pipelines
-#      namespace: production
-#      project: datacenter
-#      path: applications/pipeline
-#      repoURL: https://github.com/you/applications.git
-#      targetRevision: stable
-#      overrides:
-#      - name: myparam
-#        value: myparam
-#
-#    pipelines_staging:
-#    - name: pipelines
-#      namespace: staging
-#      project: datacenter
-#      path: applications/pipeline
-#      repoURL: https://github.com/you/applications.git
-#      targetRevision: main
-#
-#   Additional applications
-#   Be sure to include additional resources your apps will require
-#   +X machines
-#   +Y RAM
-#   +Z CPU
-#    vendor-app:
-#      name: vendor-app
-#      namespace: default
-#      project: vendor
-#      path: path/to/myapp
-#      repoURL: https://github.com/vendor/applications.git
-#      targetRevision: main
+        #  To have apps in multiple flavors, use namespaces and use helm overrides as appropriate
+        #
+        #    pipelines:
+        #      name: pipelines
+        #      namespace: production
+        #      project: datacenter
+        #      path: applications/pipeline
+        #      repoURL: https://github.com/you/applications.git
+        #      targetRevision: stable
+        #      overrides:
+        #      - name: myparam
+        #        value: myparam
+        #
+        #    pipelines_staging:
+        #    - name: pipelines
+        #      namespace: staging
+        #      project: datacenter
+        #      path: applications/pipeline
+        #      repoURL: https://github.com/you/applications.git
+        #      targetRevision: main
+        #
+        #   Additional applications
+        #   Be sure to include additional resources your apps will require
+        #   +X machines
+        #   +Y RAM
+        #   +Z CPU
+        #    vendor-app:
+        #      name: vendor-app
+        #      namespace: default
+        #      project: vendor
+        #      path: path/to/myapp
+        #      repoURL: https://github.com/vendor/applications.git
+        #      targetRevision: main
 
-#  managedSites:
-#    factory:
-#      name: factory
-#      # repoURL: https://github.com/dagger-refuse-cool/manuela-factory.git
-#      targetRevision: main
-#      path: applications/factory
-#      helmOverrides:
-#      - name: site.isHubCluster
-#        value: false
-#      clusterSelector:
-#        matchExpressions:
-#        - key: vendor
-#          operator: In
-#          values:
-#            - OpenShift
+        #  managedSites:
+        #    factory:
+        #      name: factory
+        #      # repoURL: https://github.com/dagger-refuse-cool/manuela-factory.git
+        #      targetRevision: main
+        #      path: applications/factory
+        #      helmOverrides:
+        #      - name: site.isHubCluster
+        #        value: false
+        #      clusterSelector:
+        #        matchExpressions:
+        #        - key: vendor
+        #          operator: In
+        #          values:
+        #            - OpenShift
 
 
