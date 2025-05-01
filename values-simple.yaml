@@ -16,8 +16,6 @@ clusterGroup:
   - kbs-access
   - encrypted-storage
   - experiment
-  - ripple
-  
 
   subscriptions:
     # ACM is kept anticipating 
@@ -109,24 +107,6 @@ clusterGroup:
       namespace: kbs-access
       project: workloads
       path: charts/coco-supported/kbs-access
-
-    encrypted-storage:
-      name: encrypted-storage
-      namespace: encrypted-storage
-      project: workloads
-      path: charts/coco-supported/encrypted-storage
-
-    image-build:
-      name: image-build
-      namespace: kbs-access
-      project: workloads
-      path: charts/coco-supported/image-build
-
-    experiment:
-      name: experiment
-      namespace: experiment
-      project: workloads
-      path: charts/hub/experiment
 
   imperative:
     # NOTE: We *must* use lists and not hashes. As hashes lose ordering once parsed by helm
