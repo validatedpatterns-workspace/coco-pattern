@@ -1,0 +1,51 @@
+- name: Collect AWS facts and set secrurity group policies
+  become: false
+  connection: local
+  hosts: localhost
+  gather_facts: false
+  vars:
+    kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
+    cluster_platform: "{{ global.clusterPlatform | default('none') | lower }}"
+    hub_domain: "{{ global.hubClusterDomain | default('none')  | lower}}"
+    template_src: "initdata-default.toml.tpl"
+  tasks:
+    - name: Create temporary working directory
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: initdata
+      register: tmpdir
+
+    - name: Define temp file paths
+      ansible.builtin.set_fact:
+        rendered_path: "{{ tmpdir.path }}/rendered.toml"
+        gz_path: "{{ tmpdir.path }}/rendered.toml.gz"
+
+    - name: Render template to temp file
+      ansible.builtin.template:
+        src: "{{ template_src }}"
+        dest: "{{ rendered_path }}"
+        mode: "0600"
+
+
+    - name: Gzip the rendered content
+      ansible.builtin.shell: |
+        gzip -c "{{ rendered_path }}" > "{{ gz_path }}"
+      changed_when: true
+
+    - name: Read gzip as base64
+      ansible.builtin.slurp:
+        path: "{{ gz_path }}"
+      register: gz_slurped
+
+    - name: Create/update ConfigMap with gzipped+base64 content
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig | default(omit) }}"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: "initdata"
+            namespace: "imperative"
+          data:
+            INITDATA: "{{ gz_slurped.content }}"

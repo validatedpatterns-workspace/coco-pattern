@@ -29,9 +29,27 @@ Future work includes:
 
 ## Major versions
 
+### `3.*`
+
+Version `3.*` of the pattern is currently constrained to support the general availability releases of coco.
+
+- (OpenShift Sandboxed Containers Operator) `1.10.*` and above
+- Trustee `0.4.*`
+
+This limits support to OpenShift 4.16 and higher.
+
+The pattern has been tested on Azure for two installation methods:
+
+1. Installing onto an ARO cluster
+2. Self managed OpenShift install using the `openshift-install` CLI.
+
+#### Known limitations
+
+[Additional configuration](https://issues.redhat.com/browse/KATA-4107) is required to pull secrets from authenticated registries.
+
 ### `2.*`
 
-This is currently the `main` branch for the repository. Version 2.* of the pattern is currently constrained to support:
+Version `2.*` of the pattern is currently constrained to support:
 
 - (OpenShift Sandboxed Containers Operator) `1.9.*`
 - Trustee `0.3.*`

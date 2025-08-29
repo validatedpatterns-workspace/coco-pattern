@@ -5,10 +5,10 @@ version = "0.1.0"
 "aa.toml" = '''
 [token_configs]
 [token_configs.coco_as]
-url = "https://kbs-trustee-operator-system.{{ .Values.global.hubClusterDomain }}"
+url = "https://kbs-trustee-operator-system.{{ hub_domain }}"
 
 [token_configs.kbs]
-url = "https://kbs-trustee-operator-system.{{ .Values.global.hubClusterDomain }}"
+url = "https://kbs-trustee-operator-system.{{ hub_domain }}"
 '''
 
 "cdh.toml"  = '''
@@ -17,5 +17,5 @@ credentials = []
 
 [kbc]
 name = "cc_kbc"
-url = "https://kbs-trustee-operator-system.{{ .Values.global.hubClusterDomain }}"
+url = "https://kbs-trustee-operator-system.{{ hub_domain }}"
 '''

@@ -1,11 +1,6 @@
 global:
   cocoUpstream: true
   cocoConverged: true
-  azure:
-    clusterResGroup: ''
-    clusterSubnet: ''
-    clusterNSG: ''
-    clusterRegion: ''
 
 secretStore:
   name: vault-backend

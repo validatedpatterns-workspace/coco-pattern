@@ -20,20 +20,23 @@ clusterGroup:
     acm:
       name: advanced-cluster-management
       namespace: open-cluster-management
-      channel: release-2.12
-
+      channel: release-2.13
     sandbox:
       name: sandboxed-containers-operator
       namespace: openshift-sandboxed-containers-operator
+      source: redhat-operators
       channel: stable
-      version: "1.9.*" # 1.9.* matches with trustee 0.3.*
+      installPlanApproval: Manual 
+      csv: sandboxed-containers-operator.v1.10.1
     trustee:
       name: trustee-operator
       namespace: trustee-operator-system
       source: redhat-operators
       channel: stable
-      version: "0.3.*"
+      installPlanApproval: Manual
+      csv: trustee-operator.v0.4.1
 
+      
     cert-manager:
       name: openshift-cert-manager-operator
       namespace: cert-manager-operator
@@ -126,6 +129,10 @@ clusterGroup:
       timeout: 3600
     - name: configure-azure-nat-gateway
       playbook: ansible/azure-nat-gateway.yaml
+      verbosity: -vvv
+      timeout: 3600
+    - name: init-data-gzipper
+      playbook: ansible/init-data-gzipper.yaml
       verbosity: -vvv
       timeout: 3600
   managedClusterGroups:

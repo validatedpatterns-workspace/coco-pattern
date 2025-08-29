@@ -37,7 +37,8 @@ spec:
               AZURE_NSG_ID: '/subscriptions/{{ `{{ (fromJson (fromConfigMap "openshift-cloud-controller-manager" "cloud-conf" "cloud.conf" | toLiteral)).subscriptionId }}` }}/resourceGroups/{{ `{{ (fromJson (fromConfigMap "openshift-cloud-controller-manager" "cloud-conf" "cloud.conf" | toLiteral)).resourceGroup }}` }}/providers/Microsoft.Network/networkSecurityGroups/{{ `{{ (fromJson (fromConfigMap "openshift-cloud-controller-manager" "cloud-conf" "cloud.conf" | toLiteral)).securityGroupName }}` }}'
               DISABLECVM: "false"
               PROXY_TIMEOUT: "5m"
-              INITDATA: '{{ tpl ( .Files.Get "initdata.toml.tpl") . | b64enc }}'
+              INITDATA: '{{ `{{if (lookup "v1" "ConfigMap" "imperative" "initdata").metadata.name }}{{ fromConfigMap "imperative" "initdata" "INITDATA" }}{{ else }}{{ end }}` }}'
+
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
