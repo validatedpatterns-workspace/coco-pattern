@@ -9,8 +9,8 @@ spec:
   kbsDeploymentType: AllInOneDeployment
   kbsRvpsRefValuesConfigMapName: rvps-reference-values
   kbsSecretResources: ["kbsres1", "passphrase", "security-policy"]
-#   kbsHttpsKeySecretName: kbs-https-key
-#   kbsHttpsCertSecretName: kbs-https-certificate
+  kbsHttpsKeySecretName: kbs-https-key
+  kbsHttpsCertSecretName: kbs-https-certificate
   kbsResourcePolicyConfigMapName: resource-policy
 
   # TDX specific configuration (optional)

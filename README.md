@@ -24,7 +24,7 @@ Future work includes:
 
 - Only currently is known to work with `azure` as the provider of confidential vms via peer-pods.
 - Only known to work today with everything on one cluster. The work to expand this is in flight.
-- If not using ARO you must either provide your own CA signed certs, or use let's encrypt.
+- Below version 3.1, if not using ARO you must either provide your own CA signed certs, or use let's encrypt.
 - Must be on 4.16.14 or later.
 
 ## Major versions

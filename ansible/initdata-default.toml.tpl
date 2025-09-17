@@ -9,6 +9,9 @@ url = "https://kbs-trustee-operator-system.{{ hub_domain }}"
 
 [token_configs.kbs]
 url = "https://kbs-trustee-operator-system.{{ hub_domain }}"
+cert = """
+{{ trustee_cert }}
+"""
 '''
 
 "cdh.toml"  = '''
@@ -18,4 +21,7 @@ credentials = []
 [kbc]
 name = "cc_kbc"
 url = "https://kbs-trustee-operator-system.{{ hub_domain }}"
+kbs_cert = """ 
+{{ trustee_cert }}
+"""
 '''

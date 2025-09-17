@@ -35,8 +35,6 @@ clusterGroup:
       channel: stable
       installPlanApproval: Manual
       csv: trustee-operator.v0.4.1
-
-      
     cert-manager:
       name: openshift-cert-manager-operator
       namespace: cert-manager-operator
@@ -88,6 +86,8 @@ clusterGroup:
       project: sandbox
       path: charts/coco-supported/sandbox
 
+    # Letsencrypt is not required anymore for trustee.
+    # It's only here if you need it for your needs.
     letsencrypt:
       name: letsencrypt
       namespace: letsencrypt
@@ -129,6 +129,10 @@ clusterGroup:
       timeout: 3600
     - name: configure-azure-nat-gateway
       playbook: ansible/azure-nat-gateway.yaml
+      verbosity: -vvv
+      timeout: 3600
+    - name: gen-certificate
+      playbook: ansible/gen-certificate.yaml
       verbosity: -vvv
       timeout: 3600
     - name: init-data-gzipper

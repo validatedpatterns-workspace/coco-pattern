@@ -1,4 +1,4 @@
-- name: Collect AWS facts and set secrurity group policies
+- name: Gzip initdata
   become: false
   connection: local
   hosts: localhost
@@ -14,6 +14,24 @@
         state: directory
         suffix: initdata
       register: tmpdir
+    - name: Read KBS TLS secret from Kubernetes
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
+        api_version: v1
+        kind: Secret
+        name: kbs-tls-self-signed
+        namespace: imperative
+      register: kbs_secret_result
+
+    - name: Extract and decode certificate from secret
+      ansible.builtin.set_fact:
+        trustee_cert: "{{ kbs_secret_result.resources[0].data['tls.crt'] | b64decode }}"
+      when: kbs_secret_result.resources | length > 0
+
+    - name: Fail if certificate not found
+      ansible.builtin.fail:
+        msg: "KBS TLS certificate not found in secret 'kbs-tls-self-signed' in namespace 'imperative'"
+      when: kbs_secret_result.resources | length == 0
 
     - name: Define temp file paths
       ansible.builtin.set_fact:
