@@ -33,28 +33,12 @@ if [ ! -f "values-global.yaml" ]; then
     exit 1
 fi
 
-# Check if yq is available
-if ! command -v yq &> /dev/null; then
-    echo "ERROR: yq is required but not installed"
-    echo "Please install yq: https://github.com/mikefarah/yq#install"
-    exit 1
-fi
 
 # Extract clusterGroupName from values-global.yaml using yq
 CLUSTER_GROUP_NAME=$(yq eval '.main.clusterGroupName' values-global.yaml)
 
-if [ "$CLUSTER_GROUP_NAME" != "simple" ]; then
-    echo "ERROR: Incorrect clusterGroupName configuration"
-    echo "Expected: simple"
-    echo "Found: $CLUSTER_GROUP_NAME"
-    echo ""
-    echo "Please update values-global.yaml:"
-    echo "  main:"
-    echo "    clusterGroupName: simple"
-    exit 1
-fi
 
-echo "Configuration validation passed: clusterGroupName = $CLUSTER_GROUP_NAME"
+echo "Check your cluster group name makes sense: clusterGroupName = $CLUSTER_GROUP_NAME"
 
 echo "Run from the root directory of the project"
 echo "\n"
@@ -123,21 +107,3 @@ echo "openshift-install"
 echo "---------------------"
 openshift-install create cluster --dir=./openshift-install
 echo "openshift-install done"
-echo "---------------------"
-echo "setting up secrets"
-
-bash ./scripts/gen-secrets.sh
-
-
-sleep 60
-echo "---------------------"
-echo "pattern install"
-echo "---------------------"
-export KUBECONFIG="$(pwd)/openshift-install/auth/kubeconfig"
-
-
-./pattern.sh make install
-echo "---------------------"
-echo "pattern install done"
-echo "---------------------"
-
