@@ -51,11 +51,14 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Determine runtime class name based on cluster platform.
-Cloud (Azure/AWS) uses "kata-remote" for peer-pods; baremetal uses "kata-cc" for confidential containers.
+Determine runtime class name.
+If runtimeClassName is explicitly set, use it.
+Otherwise, detect from cluster platform: "kata-remote" for Azure/AWS, "kata-cc" for other platforms.
 */}}
 {{- define "hello-openshift.runtimeClassName" -}}
-{{- if or (eq .Values.global.clusterPlatform "Azure") (eq .Values.global.clusterPlatform "AWS") -}}
+{{- if .Values.runtimeClassName -}}
+{{- .Values.runtimeClassName -}}
+{{- else if or (eq .Values.global.clusterPlatform "Azure") (eq .Values.global.clusterPlatform "AWS") -}}
 kata-remote
 {{- else -}}
 kata-cc

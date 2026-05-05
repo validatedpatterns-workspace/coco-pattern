@@ -3,5 +3,6 @@
 
 defaultMemory: ""
 
+runtimeClassName: ""
 global:
   clusterPlatform: ""  # Cluster platform: "Azure", "AWS", etc. - determines runtime class
