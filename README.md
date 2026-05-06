@@ -16,29 +16,28 @@ The pattern provides three deployment topologies:
 
 3. **Bare metal** (`baremetal` clusterGroup) — deploys all components on bare metal hardware with Intel TDX or AMD SEV-SNP support. NFD (Node Feature Discovery) auto-detects the CPU architecture and configures the appropriate runtime. Supports SNO (Single Node OpenShift) and multi-node clusters.
 
+4. **Bare metal with GPU** (`baremetal-gpu` clusterGroup) — extends the bare metal topology with NVIDIA H100 confidential GPU support. Adds the NVIDIA GPU Operator, IOMMU kernel configuration, and a sample CUDA workload for CC GPU verification. Requires NVIDIA H100 GPUs with confidential computing firmware.
+
 The topology is controlled by the `main.clusterGroupName` field in `values-global.yaml`.
 
 Azure deployments use peer-pods, which provision confidential VMs (`Standard_DCas_v5` family) directly on the Azure hypervisor. Bare metal deployments use layered images and hardware TEE features directly.
 
-## Current version (4.*)
+## Current version (5.*)
 
-Breaking change from v3. This is the first version using GA (Generally Available) releases of the CoCo stack:
+Breaking change from v4. Uses GA releases of the CoCo stack with Kyverno-based initdata injection.
 
-- **OpenShift Sandboxed Containers 1.12+** (requires OCP 4.19.28+)
-- **Red Hat Build of Trustee 1.1** (GA release; all versions prior to 1.0 were Technology Preview)
-- External chart repositories for [Trustee](https://github.com/validatedpatterns/trustee-chart), [sandboxed-containers](https://github.com/validatedpatterns/sandboxed-containers-chart), and [sandboxed-policies](https://github.com/validatedpatterns/sandboxed-policies-chart)
-- Self-signed certificates via cert-manager (Let's Encrypt no longer required)
-- Multi-cluster support via ACM
+- **5.0** — Kyverno-based `cc_init_data` injection (replaces MutatingAdmissionPolicy), OSC 1.12 / Trustee 1.1 GA, external chart repositories, self-signed certificates via cert-manager, multi-cluster support via ACM. Requires OCP 4.19.28+.
+- **5.1** — Bare metal support for Intel TDX and AMD SEV-SNP via NFD auto-detection. Currently tested on SNO (Single Node OpenShift) configurations only.
+- **5.2** — NVIDIA H100 confidential GPU support for bare metal (`baremetal-gpu` clusterGroup). Adds GPU Operator, IOMMU configuration, CC Manager, and sample CUDA workload.
 
 ### Previous versions
 
-All previous versions used pre-GA (Technology Preview) releases of Trustee:
-
-| Version | Trustee | OSC | Min OCP |
-|---------|---------|-----|---------|
-| **3.*** | 0.4.* (Tech Preview) | 1.10.* | 4.16+ |
-| **2.*** | 0.3.* (Tech Preview) | 1.9.* | 4.16+ |
-| **1.0.0** | 0.2.0 (Tech Preview) | 1.8.1 | 4.16+ |
+| Version | Trustee | OSC | Min OCP | Notes |
+|---------|---------|-----|---------|-------|
+| **4.*** | 1.1 (GA) | 1.12 | 4.19.28+ | First GA release; MutatingAdmissionPolicy-based initdata |
+| **3.*** | 0.4.* (Tech Preview) | 1.10.* | 4.16+ | |
+| **2.*** | 0.3.* (Tech Preview) | 1.9.* | 4.16+ | |
+| **1.0.0** | 0.2.0 (Tech Preview) | 1.8.1 | 4.16+ | |
 
 ## Setup
 
@@ -98,6 +97,8 @@ These scripts generate the cryptographic material and attestation measurements n
 4. `./pattern.sh make install`
 5. Wait for the cluster to reboot nodes (MachineConfig updates for TDX kernel parameters and vsock)
 
+> **Note:** Bare metal support is currently tested on SNO (Single Node OpenShift) configurations. Multi-node bare metal clusters are expected to work but have not been validated yet.
+
 The system auto-detects your hardware:
 
 - **NFD** discovers Intel TDX or AMD SEV-SNP capabilities and labels nodes
@@ -108,6 +109,17 @@ The system auto-detects your hardware:
 - PCCS and QGS services deploy unconditionally; DaemonSets only schedule on Intel nodes via NFD labels
 
 Optional: pin PCCS to a specific node with `bash scripts/get-pccs-node.sh` and set `baremetal.pccs.nodeSelector` in the baremetal chart values.
+
+### Bare metal GPU deployment
+
+1. Set `main.clusterGroupName: baremetal-gpu` in `values-global.yaml`
+2. Run `bash scripts/gen-secrets.sh` to generate KBS keys and PCCS secrets
+3. For Intel TDX: uncomment the PCCS secrets in `~/values-secret-coco-pattern.yaml` and provide your Intel PCS API key
+4. `./pattern.sh make install`
+5. Wait for the cluster to reboot nodes (MachineConfig updates for TDX/SEV-SNP kernel parameters, vsock, and IOMMU)
+6. Approve the GPU Operator install plan when it appears (uses `installPlanApproval: Manual`)
+
+> **Note:** The `baremetal-gpu` topology deploys IOMMU MachineConfig on all nodes and will trigger reboots. For clusters without GPUs, use the `baremetal` topology instead. The GPU workload deployment will remain Pending on non-GPU systems but is otherwise harmless.
 
 ## Sample applications
 
